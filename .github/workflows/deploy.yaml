@@ -31,7 +31,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd ~/webapp
-            docker build -t webapp:latest .
-            docker rm -f webapp || true
-            docker run -d --name webapp -p 80:80 webapp:latest
+            sudo docker build -t webapp:latest .
+            sudo docker rm -f webapp || true
+            sudo docker run -d --name webapp -p 80:80 webapp:latest
           EOF

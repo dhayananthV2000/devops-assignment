@@ -59,4 +59,4 @@ jobs:
 
             echo "Running production container"
             sudo docker run -d --name webapp -p 80:80 webapp:latest
-EOF
+           EOF

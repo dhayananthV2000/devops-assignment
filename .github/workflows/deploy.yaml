@@ -31,7 +31,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd ~/webapp
-
+             sudo rm -r /var/log/webapp.log
+              sudo touch /var/log/webapp.log
             sudo docker rm -f webapp || true
             sudo docker rm -f webapp-test || true
             sudo docker rmi -f webapp:latest || true
@@ -55,5 +56,6 @@ jobs:
             fi
             sudo docker rm -f webapp-test
 
-            sudo docker run -d --name webapp -p 80:80 webapp:latest
+            sudo docker run -d   --name webapp   -p 80:80   -v /var/log/webapp.log:/var/log/app.log   webapp:latest
+
           

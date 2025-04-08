@@ -37,6 +37,7 @@ This project provisions an EC2 instance using Terraform, configures it with Ansi
 - Ansible was installed via `user_data` script.
 - Ansible then installed Docker and created a directory for the app.
 - Dockerfile and app were copied via GitHub Actions and then built/run on the EC2.
+ Link to ansible playbook: https://github.com/dhayananthV2000/devops-assignment/blob/main/ansible-config/deploy_app.yml
 
 ---
 

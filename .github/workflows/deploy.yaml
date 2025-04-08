@@ -56,4 +56,4 @@ jobs:
             sudo docker rm -f webapp-test
 
             sudo docker run -d --name webapp -p 80:80 webapp:latest
-           EOF
+          

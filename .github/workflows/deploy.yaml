@@ -1,4 +1,4 @@
-name: Build & Deploy to EC2
+name: Build and Deploy to EC2
 
 on:
   push:
@@ -7,15 +7,15 @@ on:
     paths:
       - "ansible-config/webapp/**"
 
-  workflow_dispatch:  
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Build, Test & Run Docker on EC2
+    name: Build, Test and Deploy Docker Container
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up SSH key
@@ -23,40 +23,33 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
           chmod 600 key.pem
 
-      - name: Copy app to EC2
+      - name: Copy application code to EC2
         run: |
           scp -o StrictHostKeyChecking=no -i key.pem -r ansible-config/webapp ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/webapp
 
-      - name: SSH, Build, Test & Run container
+      - name: SSH into EC2 and deploy container
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd ~/webapp
 
-           
             sudo docker rm -f webapp || true
             sudo docker rm -f webapp-test || true
             sudo docker rmi -f webapp:latest || true
 
-           
             sudo docker build -t webapp:latest .
 
-            echo "Running test container..."
             sudo docker run -d --name webapp-test -p 8080:80 webapp:latest
 
-            echo "Waiting for container to boot..."
             sleep 5
 
-            echo "Testing webapp..."
             curl -s --fail http://localhost:8080 || {
-              echo "App test failed. Aborting deployment."
+              echo "Application test failed. Aborting deployment."
               sudo docker logs webapp-test
               sudo docker rm -f webapp-test
               exit 1
             }
 
-            echo " App is healthy. Proceeding with deployment"
             sudo docker rm -f webapp-test
 
-            echo "Running production container"
             sudo docker run -d --name webapp -p 80:80 webapp:latest
            EOF

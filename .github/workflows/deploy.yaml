@@ -42,13 +42,17 @@ jobs:
 
             sleep 5
 
-            curl -s --fail http://localhost:8080 || {
-              echo "Application test failed. Aborting deployment."
-              sudo docker logs webapp-test
-              sudo docker rm -f webapp-test
-              exit 1
-            }
+            echo "Testing webapp..."
+           STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:8080)
 
+             if [ "$STATUS" -ne 200 ]; then
+            echo "Application test failed with status code $STATUS. Aborting deployment."
+            sudo docker logs webapp-test
+            sudo docker rm -f webapp-test
+            exit 1
+            else
+             echo "Application responded with 200 OK. Proceeding with deployment."
+            fi
             sudo docker rm -f webapp-test
 
             sudo docker run -d --name webapp -p 80:80 webapp:latest

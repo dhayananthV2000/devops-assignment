@@ -10,13 +10,13 @@ module "security_group" {
 }
 
 module "ec2_instance" {
-  source             = "./modules/ec2"
-  ami                = "ami-084568db4383264d4" 
-  instance_type      = "t2.micro"
-  subnet_id          = var.subnet_id
-  security_group_ids = [module.security_group.security_group_id]
-  key_name           = var.key_name
-  tags               = {
-    Name = "TerraformEC2"
-  }
+  source = "./modules/ec2"
+
+  name                  = "myec2"
+  ami                   = var.ami
+  instance_type         = var.instance_type
+  subnet_id             = var.subnet_id
+  security_group_ids    = [module.security_group.security_group_id]
+  key_name              = var.key_name
+  tags                  = var.tags
 }

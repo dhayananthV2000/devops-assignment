@@ -1,19 +1,36 @@
-variable "aws_region" {
+variable "ami" {
   type        = string
-  description = "AWS region"
+  description = "AMI ID to use for the instance"
 }
 
-variable "vpc_id" {
+variable "instance_type" {
   type        = string
-  description = "VPC ID for the infrastructure"
+  description = "Type of EC2 instance"
 }
 
 variable "subnet_id" {
   type        = string
-  description = "Subnet ID for the EC2 instance"
+  description = "Subnet ID to launch the instance in"
 }
+
+
 
 variable "key_name" {
   type        = string
-  description = "SSH key pair name"
+  description = "Name of the SSH key pair"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to the instance"
+  default     = {}
+}
+
+variable "name" {
+  description = "Name prefix for naming resources"
+  type        = string
+}
+variable "vpc_id" {
+  description = "Name of vpc id"
+  type        = string
 }

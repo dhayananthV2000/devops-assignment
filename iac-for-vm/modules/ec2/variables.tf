@@ -28,3 +28,8 @@ variable "tags" {
   description = "Tags to apply to the instance"
   default     = {}
 }
+
+variable "name" {
+  description = "Name prefix for naming resources"
+  type        = string
+}

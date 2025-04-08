@@ -58,7 +58,7 @@ https://github.com/dhayananthV2000/devops-assignment/blob/main/ansible-config/we
 - It sends a `curl` request to `localhost:8080` to verify the app is returning the expected response.
 - If the test is successful, the container is removed and a **production container** is launched on port 80.
 
-📄 _Excerpt from workflow file showing test logic:_
+
 
 ```yaml
 curl -s --fail http://localhost:8080 || {
@@ -67,6 +67,7 @@ curl -s --fail http://localhost:8080 || {
   sudo docker rm -f webapp-test
   exit 1
 }
+```
 
 this is my link to workflow file:
 https://github.com/dhayananthV2000/devops-assignment/blob/main/.github/workflows/deploy.yaml

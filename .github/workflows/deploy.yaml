@@ -7,11 +7,11 @@ on:
     paths:
       - "ansible-config/webapp/**"
 
-  workflow_dispatch:  
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   deploy:
-    name: Build and Run Docker on EC2
+    name: Build, Test & Run Docker on EC2
     runs-on: ubuntu-latest
 
     steps:
@@ -27,12 +27,36 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no -i key.pem -r ansible-config/webapp ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/webapp
 
-      - name: SSH and build & run container
+      - name: SSH, Build, Test & Run container
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd ~/webapp
+
+           
             sudo docker rm -f webapp || true
+            sudo docker rm -f webapp-test || true
+            sudo docker rmi -f webapp:latest || true
+
+           
             sudo docker build -t webapp:latest .
-            sudo docker rm -f webapp || true
+
+            echo "Running test container..."
+            sudo docker run -d --name webapp-test -p 8080:80 webapp:latest
+
+            echo "Waiting for container to boot..."
+            sleep 5
+
+            echo "Testing webapp..."
+            curl -s --fail http://localhost:8080 || {
+              echo "App test failed. Aborting deployment."
+              sudo docker logs webapp-test
+              sudo docker rm -f webapp-test
+              exit 1
+            }
+
+            echo " App is healthy. Proceeding with deployment"
+            sudo docker rm -f webapp-test
+
+            echo "Running production container"
             sudo docker run -d --name webapp -p 80:80 webapp:latest
-          EOF
+EOF
